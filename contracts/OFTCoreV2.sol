@@ -18,26 +18,44 @@ abstract contract OFTCoreV2 is NonblockingLzApp {
 
     uint8 public immutable sharedDecimals;
 
-    mapping(uint16 => mapping(bytes => mapping(uint64 => bool))) public creditedPackets;
+    mapping(uint16 => mapping(bytes => mapping(uint64 => bool)))
+        public creditedPackets;
 
     /**
      * @dev Emitted when `_amount` tokens are moved from the `_sender` to (`_dstChainId`, `_toAddress`)
      * `_nonce` is the outbound nonce
      */
-    event SendToChain(uint16 indexed _dstChainId, address indexed _from, bytes32 indexed _toAddress, uint _amount);
+    event SendToChain(
+        uint16 indexed _dstChainId,
+        address indexed _from,
+        bytes32 indexed _toAddress,
+        uint _amount
+    );
 
     /**
      * @dev Emitted when `_amount` tokens are received from `_srcChainId` into the `_toAddress` on the local chain.
      * `_nonce` is the inbound nonce.
      */
-    event ReceiveFromChain(uint16 indexed _srcChainId, address indexed _to, uint _amount);
+    event ReceiveFromChain(
+        uint16 indexed _srcChainId,
+        address indexed _to,
+        uint _amount
+    );
 
-    event CallOFTReceivedSuccess(uint16 indexed _srcChainId, bytes _srcAddress, uint64 _nonce, bytes32 _hash);
+    event CallOFTReceivedSuccess(
+        uint16 indexed _srcChainId,
+        bytes _srcAddress,
+        uint64 _nonce,
+        bytes32 _hash
+    );
 
     event NonContractAddress(address _address);
 
     // _sharedDecimals should be the minimum decimals on all chains
-    constructor(uint8 _sharedDecimals, address _lzEndpoint) NonblockingLzApp(_lzEndpoint) {
+    constructor(
+        uint8 _sharedDecimals,
+        address _lzEndpoint
+    ) NonblockingLzApp(_lzEndpoint) {
         sharedDecimals = _sharedDecimals;
     }
 
@@ -54,14 +72,24 @@ abstract contract OFTCoreV2 is NonblockingLzApp {
         bytes calldata _payload,
         uint _gasForCall
     ) public virtual {
-        require(_msgSender() == address(this), "OFTCore: caller must be OFTCore");
+        require(
+            _msgSender() == address(this),
+            "OFTCore: caller must be OFTCore"
+        );
 
         // send
         _amount = _transferFrom(address(this), _to, _amount);
         emit ReceiveFromChain(_srcChainId, _to, _amount);
 
         // call
-        IOFTReceiverV2(_to).onOFTReceived{gas: _gasForCall}(_srcChainId, _srcAddress, _nonce, _from, _amount, _payload);
+        IOFTReceiverV2(_to).onOFTReceived{gas: _gasForCall}(
+            _srcChainId,
+            _srcAddress,
+            _nonce,
+            _from,
+            _amount,
+            _payload
+        );
     }
 
     /************************************************************************
@@ -76,7 +104,14 @@ abstract contract OFTCoreV2 is NonblockingLzApp {
     ) internal view virtual returns (uint nativeFee, uint zroFee) {
         // mock the payload for sendFrom()
         bytes memory payload = _encodeSendPayload(_toAddress, _ld2sd(_amount));
-        return lzEndpoint.estimateFees(_dstChainId, address(this), payload, _useZro, _adapterParams);
+        return
+            lzEndpoint.estimateFees(
+                _dstChainId,
+                address(this),
+                payload,
+                _useZro,
+                _adapterParams
+            );
     }
 
     function _estimateSendAndCallFee(
@@ -89,8 +124,21 @@ abstract contract OFTCoreV2 is NonblockingLzApp {
         bytes memory _adapterParams
     ) internal view virtual returns (uint nativeFee, uint zroFee) {
         // mock the payload for sendAndCall()
-        bytes memory payload = _encodeSendAndCallPayload(msg.sender, _toAddress, _ld2sd(_amount), _payload, _dstGasForCall);
-        return lzEndpoint.estimateFees(_dstChainId, address(this), payload, _useZro, _adapterParams);
+        bytes memory payload = _encodeSendAndCallPayload(
+            msg.sender,
+            _toAddress,
+            _ld2sd(_amount),
+            _payload,
+            _dstGasForCall
+        );
+        return
+            lzEndpoint.estimateFees(
+                _dstChainId,
+                address(this),
+                payload,
+                _useZro,
+                _adapterParams
+            );
     }
 
     function _nonblockingLzReceive(
@@ -126,7 +174,14 @@ abstract contract OFTCoreV2 is NonblockingLzApp {
         require(amount > 0, "OFTCore: amount too small");
 
         bytes memory lzPayload = _encodeSendPayload(_toAddress, _ld2sd(amount));
-        _lzSend(_dstChainId, lzPayload, _refundAddress, _zroPaymentAddress, _adapterParams, msg.value);
+        _lzSend(
+            _dstChainId,
+            lzPayload,
+            _refundAddress,
+            _zroPaymentAddress,
+            _adapterParams,
+            msg.value
+        );
 
         emit SendToChain(_dstChainId, _from, _toAddress, amount);
     }
@@ -159,15 +214,33 @@ abstract contract OFTCoreV2 is NonblockingLzApp {
         address _zroPaymentAddress,
         bytes memory _adapterParams
     ) internal virtual returns (uint amount) {
-        _checkGasLimit(_dstChainId, PT_SEND_AND_CALL, _adapterParams, _dstGasForCall);
+        _checkGasLimit(
+            _dstChainId,
+            PT_SEND_AND_CALL,
+            _adapterParams,
+            _dstGasForCall
+        );
 
         (amount, ) = _removeDust(_amount);
         amount = _debitFrom(_from, _dstChainId, _toAddress, amount);
         require(amount > 0, "OFTCore: amount too small");
 
         // encode the msg.sender into the payload instead of _from
-        bytes memory lzPayload = _encodeSendAndCallPayload(msg.sender, _toAddress, _ld2sd(amount), _payload, _dstGasForCall);
-        _lzSend(_dstChainId, lzPayload, _refundAddress, _zroPaymentAddress, _adapterParams, msg.value);
+        bytes memory lzPayload = _encodeSendAndCallPayload(
+            msg.sender,
+            _toAddress,
+            _ld2sd(amount),
+            _payload,
+            _dstGasForCall
+        );
+        _lzSend(
+            _dstChainId,
+            lzPayload,
+            _refundAddress,
+            _zroPaymentAddress,
+            _adapterParams,
+            msg.value
+        );
 
         emit SendToChain(_dstChainId, _from, _toAddress, amount);
     }
@@ -178,7 +251,13 @@ abstract contract OFTCoreV2 is NonblockingLzApp {
         uint64 _nonce,
         bytes memory _payload
     ) internal virtual {
-        (bytes32 from, address to, uint64 amountSD, bytes memory payloadForCall, uint64 gasForCall) = _decodeSendAndCallPayload(_payload);
+        (
+            bytes32 from,
+            address to,
+            uint64 amountSD,
+            bytes memory payloadForCall,
+            uint64 gasForCall
+        ) = _decodeSendAndCallPayload(_payload);
 
         bool credited = creditedPackets[_srcChainId][_srcAddress][_nonce];
         uint amount = _sd2ld(amountSD);
@@ -209,7 +288,17 @@ abstract contract OFTCoreV2 is NonblockingLzApp {
         (bool success, bytes memory reason) = address(this).excessivelySafeCall(
             gasleft(),
             150,
-            abi.encodeWithSelector(this.callOnOFTReceived.selector, srcChainId, srcAddress, nonce, from_, to_, amount_, payloadForCall_, gas)
+            abi.encodeWithSelector(
+                this.callOnOFTReceived.selector,
+                srcChainId,
+                srcAddress,
+                nonce,
+                from_,
+                to_,
+                amount_,
+                payloadForCall_,
+                gas
+            )
         );
 
         if (success) {
@@ -235,17 +324,27 @@ abstract contract OFTCoreV2 is NonblockingLzApp {
         return _amountSD * _ld2sdRate();
     }
 
-    function _removeDust(uint _amount) internal view virtual returns (uint amountAfter, uint dust) {
+    function _removeDust(
+        uint _amount
+    ) internal view virtual returns (uint amountAfter, uint dust) {
         dust = _amount % _ld2sdRate();
         amountAfter = _amount - dust;
     }
 
-    function _encodeSendPayload(bytes32 _toAddress, uint64 _amountSD) internal view virtual returns (bytes memory) {
+    function _encodeSendPayload(
+        bytes32 _toAddress,
+        uint64 _amountSD
+    ) internal view virtual returns (bytes memory) {
         return abi.encodePacked(PT_SEND, _toAddress, _amountSD);
     }
 
-    function _decodeSendPayload(bytes memory _payload) internal view virtual returns (address to, uint64 amountSD) {
-        require(_payload.toUint8(0) == PT_SEND && _payload.length == 41, "OFTCore: invalid payload");
+    function _decodeSendPayload(
+        bytes memory _payload
+    ) internal view virtual returns (address to, uint64 amountSD) {
+        require(
+            _payload.toUint8(0) == PT_SEND && _payload.length == 41,
+            "OFTCore: invalid payload"
+        );
 
         to = _payload.toAddress(13); // drop the first 12 bytes of bytes32
         amountSD = _payload.toUint64(33);
@@ -258,10 +357,20 @@ abstract contract OFTCoreV2 is NonblockingLzApp {
         bytes memory _payload,
         uint64 _dstGasForCall
     ) internal view virtual returns (bytes memory) {
-        return abi.encodePacked(PT_SEND_AND_CALL, _toAddress, _amountSD, _addressToBytes32(_from), _dstGasForCall, _payload);
+        return
+            abi.encodePacked(
+                PT_SEND_AND_CALL,
+                _toAddress,
+                _amountSD,
+                _addressToBytes32(_from),
+                _dstGasForCall,
+                _payload
+            );
     }
 
-    function _decodeSendAndCallPayload(bytes memory _payload)
+    function _decodeSendAndCallPayload(
+        bytes memory _payload
+    )
         internal
         view
         virtual
@@ -273,7 +382,10 @@ abstract contract OFTCoreV2 is NonblockingLzApp {
             uint64 dstGasForCall
         )
     {
-        require(_payload.toUint8(0) == PT_SEND_AND_CALL, "OFTCore: invalid payload");
+        require(
+            _payload.toUint8(0) == PT_SEND_AND_CALL,
+            "OFTCore: invalid payload"
+        );
 
         to = _payload.toAddress(13); // drop the first 12 bytes of bytes32
         amountSD = _payload.toUint64(33);
@@ -282,7 +394,9 @@ abstract contract OFTCoreV2 is NonblockingLzApp {
         payload = _payload.slice(81, _payload.length - 81);
     }
 
-    function _addressToBytes32(address _address) internal pure virtual returns (bytes32) {
+    function _addressToBytes32(
+        address _address
+    ) internal pure virtual returns (bytes32) {
         return bytes32(uint(uint160(_address)));
     }
 
