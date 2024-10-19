@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
 
-pragma solidity ^0.8.0;
-
-import "./lzApp/NonblockingLzApp.sol";
-import "./libraries/ExcessivelySafeCall.sol";
+// import "./lzApp/NonblockingLzApp.sol";
+// import "./libraries/ExcessivelySafeCall.sol";
+// import "./interfaces/IOFTReceiverV2.sol";
 import "./interfaces/ICommonOFT.sol";
-import "./interfaces/IOFTReceiverV2.sol";
 
 abstract contract OFTCoreV2 is NonblockingLzApp {
     using BytesLib for bytes;
