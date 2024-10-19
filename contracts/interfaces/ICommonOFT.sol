@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.5.0;
+pragma solidity >=0.8.0;
 
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
@@ -8,7 +8,6 @@ import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
  * @dev Interface of the IOFT core standard
  */
 interface ICommonOFT is IERC165 {
-
     struct LzCallParams {
         address payable refundAddress;
         address zroPaymentAddress;
@@ -25,6 +24,9 @@ interface ICommonOFT is IERC165 {
      */
     function estimateSendFee(uint16 _dstChainId, bytes32 _toAddress, uint _amount, bool _useZro, bytes calldata _adapterParams) external view returns (uint nativeFee, uint zroFee);
 
+    /**
+     * @dev estimate send and call free
+     */
     function estimateSendAndCallFee(uint16 _dstChainId, bytes32 _toAddress, uint _amount, bytes calldata _payload, uint64 _dstGasForCall, bool _useZro, bytes calldata _adapterParams) external view returns (uint nativeFee, uint zroFee);
 
     /**
