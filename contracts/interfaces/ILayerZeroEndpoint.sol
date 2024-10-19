@@ -118,15 +118,15 @@ interface ILayerZeroEndpoint is ILayerZeroUserApplicationConfig {
         uint _configType
     ) external view returns (bytes memory);
 
-    // @notice get the send() LayerZero messaging library version
-    // @param _userApplication - the contract address of the user application
-    function getSendVersion(
-        address _userApplication
-    ) external view returns (uint16);
-
     // @notice get the lzReceive() LayerZero messaging library version
     // @param _userApplication - the contract address of the user application
     function getReceiveVersion(
+        address _userApplication
+    ) external view returns (uint16);
+
+    // @notice get the send() LayerZero messaging library version
+    // @param _userApplication - the contract address of the user application
+    function getSendVersion(
         address _userApplication
     ) external view returns (uint16);
 }
