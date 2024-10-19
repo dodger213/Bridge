@@ -98,13 +98,13 @@ interface ILayerZeroEndpoint is ILayerZeroUserApplicationConfig {
         address _userApplication
     ) external view returns (address);
 
-    // @notice query if the non-reentrancy guard for send() is on
-    // @return true if the guard is on. false otherwise
-    function isSendingPayload() external view returns (bool);
-
     // @notice query if the non-reentrancy guard for receive() is on
     // @return true if the guard is on. false otherwise
     function isReceivingPayload() external view returns (bool);
+
+    // @notice query if the non-reentrancy guard for send() is on
+    // @return true if the guard is on. false otherwise
+    function isSendingPayload() external view returns (bool);
 
     // @notice get the configuration of the LayerZero messaging library of the specified version
     // @param _version - messaging library version
