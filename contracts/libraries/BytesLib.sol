@@ -477,14 +477,20 @@ library BytesLib {
         return success;
     }
 
-        function equalStorage(bytes storage _preBytes, bytes memory _postBytes) internal view returns (bool) {
+    function equalStorage(
+        bytes storage _preBytes,
+        bytes memory _postBytes
+    ) internal view returns (bool) {
         bool success = true;
 
         assembly {
             // we know _preBytes_offset is 0
             let fslot := sload(_preBytes.slot)
             // Decode the length of the stored array like in concatStorage().
-            let slength := div(and(fslot, sub(mul(0x100, iszero(and(fslot, 1))), 1)), 2)
+            let slength := div(
+                and(fslot, sub(mul(0x100, iszero(and(fslot, 1))), 1)),
+                2
+            )
             let mlength := mload(_postBytes)
 
             // if lengths don't match the arrays are not equal
