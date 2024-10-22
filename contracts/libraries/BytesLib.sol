@@ -9,7 +9,10 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 library BytesLib {
-   function concat(bytes memory _preBytes, bytes memory _postBytes) internal pure returns (bytes memory) {
+    function concat(
+        bytes memory _preBytes,
+        bytes memory _postBytes
+    ) internal pure returns (bytes memory) {
         bytes memory tempBytes;
 
         assembly {
