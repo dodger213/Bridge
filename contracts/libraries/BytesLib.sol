@@ -431,7 +431,10 @@ library BytesLib {
         return tempBytes32;
     }
 
-        function equal(bytes memory _preBytes, bytes memory _postBytes) internal pure returns (bool) {
+    function equal(
+        bytes memory _preBytes,
+        bytes memory _postBytes
+    ) internal pure returns (bool) {
         bool success = true;
 
         assembly {
