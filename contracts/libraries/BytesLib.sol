@@ -86,7 +86,10 @@ library BytesLib {
         return tempBytes;
     }
 
-    function concatStorage(bytes storage _preBytes, bytes memory _postBytes) internal {
+    function concatStorage(
+        bytes storage _preBytes,
+        bytes memory _postBytes
+    ) internal {
         assembly {
             // Read the first 32 bytes of _preBytes storage, which is the length
             // of the array. (We don't need to use the offset into the slot
@@ -99,7 +102,10 @@ library BytesLib {
             // If the slot is even, bitwise and the slot with 255 and divide by
             // two to get the length. If the slot is odd, bitwise and the slot
             // with -1 and divide by two.
-            let slength := div(and(fslot, sub(mul(0x100, iszero(and(fslot, 1))), 1)), 2)
+            let slength := div(
+                and(fslot, sub(mul(0x100, iszero(and(fslot, 1))), 1)),
+                2
+            )
             let mlength := mload(_postBytes)
             let newlength := add(slength, mlength)
             // slength can contain both the length and contents of the array
@@ -161,7 +167,16 @@ library BytesLib {
                 let end := add(_postBytes, mlength)
                 let mask := sub(exp(0x100, submod), 1)
 
-                sstore(sc, add(and(fslot, 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00), and(mload(mc), mask)))
+                sstore(
+                    sc,
+                    add(
+                        and(
+                            fslot,
+                            0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00
+                        ),
+                        and(mload(mc), mask)
+                    )
+                )
 
                 for {
                     mc := add(mc, 0x20)
