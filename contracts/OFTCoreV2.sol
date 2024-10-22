@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-// import "./lzApp/NonblockingLzApp.sol";
-// import "./libraries/ExcessivelySafeCall.sol";
-// import "./interfaces/IOFTReceiverV2.sol";
+import "./lzApp/NonblockingLzApp.sol";
+import "./libraries/ExcessivelySafeCall.sol";
+import "./interfaces/IOFTReceiverV2.sol";
 import "./interfaces/ICommonOFT.sol";
 
 abstract contract OFTCoreV2 is NonblockingLzApp {
