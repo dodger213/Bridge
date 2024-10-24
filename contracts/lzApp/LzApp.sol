@@ -128,4 +128,24 @@ abstract contract LzApp is
             "LzApp: payload size is too large"
         );
     }
+
+     //---------------------------UserApplication config----------------------------------------
+    function getConfig(
+        uint16 _version,
+        uint16 _chainId,
+        address,
+        uint _configType
+    ) external view returns (bytes memory) {
+        return lzEndpoint.getConfig(_version, _chainId, address(this), _configType);
+    }
+
+    // generic config for LayerZero user Application
+    function setConfig(
+        uint16 _version,
+        uint16 _chainId,
+        uint _configType,
+        bytes calldata _config
+    ) external override onlyOwner {
+        lzEndpoint.setConfig(_version, _chainId, _configType, _config);
+    }
 }
