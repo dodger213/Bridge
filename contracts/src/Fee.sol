@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 abstract contract Fee is Ownable {
-  uint public constant BP_DENOMINATOR = 10000;
+    uint public constant BP_DENOMINATOR = 10000;
 
     mapping(uint16 => FeeConfig) public chainIdToFeeBps;
     uint16 public defaultFeeBp;
@@ -19,7 +19,7 @@ abstract contract Fee is Ownable {
     event SetDefaultFeeBp(uint16 feeBp);
     event SetFeeOwner(address feeOwner);
 
-    constructor(){
+    constructor() {
         feeOwner = owner();
     }
 }
