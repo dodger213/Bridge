@@ -32,4 +32,15 @@ contract ProxyOFTWithFee is BaseOFTWithFee {
         );
         ld2sdRate = 10 ** (decimals - _sharedDecimals);
     }
+    
+    /************************************************************************
+    * public functions
+    ************************************************************************/
+    function circulatingSupply() public view virtual override returns (uint) {
+        return innerToken.totalSupply() - outboundAmount;
+    }
+
+    function token() public view virtual override returns (address) {
+        return address(innerToken);
+    }
 }
