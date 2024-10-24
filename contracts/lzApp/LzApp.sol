@@ -35,25 +35,30 @@ abstract contract LzApp is
         lzEndpoint = ILayerZeroEndpoint(_endpoint);
     }
 
-     function lzReceive(
+    function lzReceive(
         uint16 _srcChainId,
         bytes calldata _srcAddress,
         uint64 _nonce,
         bytes calldata _payload
     ) public virtual override {
         // lzReceive must be called by the endpoint for security
-        require(_msgSender() == address(lzEndpoint), "LzApp: invalid endpoint caller");
+        require(
+            _msgSender() == address(lzEndpoint),
+            "LzApp: invalid endpoint caller"
+        );
 
         bytes memory trustedRemote = trustedRemoteLookup[_srcChainId];
         // if will still block the message pathway from (srcChainId, srcAddress). should not receive message from untrusted remote.
         require(
-            _srcAddress.length == trustedRemote.length && trustedRemote.length > 0 && keccak256(_srcAddress) == keccak256(trustedRemote),
+            _srcAddress.length == trustedRemote.length &&
+                trustedRemote.length > 0 &&
+                keccak256(_srcAddress) == keccak256(trustedRemote),
             "LzApp: invalid source sending contract"
         );
 
         _blockingLzReceive(_srcChainId, _srcAddress, _nonce, _payload);
     }
-     // abstract function - the default behaviour of LayerZero is blocking. See: NonblockingLzApp if you dont need to enforce ordered messaging
+    // abstract function - the default behaviour of LayerZero is blocking. See: NonblockingLzApp if you dont need to enforce ordered messaging
     function _blockingLzReceive(
         uint16 _srcChainId,
         bytes memory _srcAddress,
@@ -70,9 +75,19 @@ abstract contract LzApp is
         uint _nativeFee
     ) internal virtual {
         bytes memory trustedRemote = trustedRemoteLookup[_dstChainId];
-        require(trustedRemote.length != 0, "LzApp: destination chain is not a trusted source");
+        require(
+            trustedRemote.length != 0,
+            "LzApp: destination chain is not a trusted source"
+        );
         _checkPayloadSize(_dstChainId, _payload.length);
-        lzEndpoint.send{value: _nativeFee}(_dstChainId, trustedRemote, _payload, _refundAddress, _zroPaymentAddress, _adapterParams);
+        lzEndpoint.send{value: _nativeFee}(
+            _dstChainId,
+            trustedRemote,
+            _payload,
+            _refundAddress,
+            _zroPaymentAddress,
+            _adapterParams
+        );
     }
 
     function _checkGasLimit(
@@ -84,23 +99,33 @@ abstract contract LzApp is
         uint providedGasLimit = _getGasLimit(_adapterParams);
         uint minGasLimit = minDstGasLookup[_dstChainId][_type];
         require(minGasLimit > 0, "LzApp: minGasLimit not set");
-        require(providedGasLimit >= minGasLimit + _extraGas, "LzApp: gas limit is too low");
+        require(
+            providedGasLimit >= minGasLimit + _extraGas,
+            "LzApp: gas limit is too low"
+        );
     }
 
-    function _getGasLimit(bytes memory _adapterParams) internal pure virtual returns (uint gasLimit) {
+    function _getGasLimit(
+        bytes memory _adapterParams
+    ) internal pure virtual returns (uint gasLimit) {
         require(_adapterParams.length >= 34, "LzApp: invalid adapterParams");
         assembly {
             gasLimit := mload(add(_adapterParams, 34))
         }
     }
 
-    function _checkPayloadSize(uint16 _dstChainId, uint _payloadSize) internal view virtual {
+    function _checkPayloadSize(
+        uint16 _dstChainId,
+        uint _payloadSize
+    ) internal view virtual {
         uint payloadSizeLimit = payloadSizeLimitLookup[_dstChainId];
         if (payloadSizeLimit == 0) {
             // use default if not set
             payloadSizeLimit = DEFAULT_PAYLOAD_SIZE_LIMIT;
         }
-        require(_payloadSize <= payloadSizeLimit, "LzApp: payload size is too large");
+        require(
+            _payloadSize <= payloadSizeLimit,
+            "LzApp: payload size is too large"
+        );
     }
-
 }
