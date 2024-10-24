@@ -66,4 +66,25 @@ abstract contract BaseOFTWithFee is OFTCoreV2, Fee, ERC165, IOFTWithFee {
             "BaseOFTWithFee: amount is less than minAmount"
         );
     }
+     /************************************************************************
+    * public view functions
+    ************************************************************************/
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165, IERC165) returns (bool) {
+        return interfaceId == type(IOFTWithFee).interfaceId || super.supportsInterface(interfaceId);
+    }
+
+    function estimateSendFee(uint16 _dstChainId, bytes32 _toAddress, uint _amount, bool _useZro, bytes calldata _adapterParams) public view virtual override returns (uint nativeFee, uint zroFee) {
+        return _estimateSendFee(_dstChainId, _toAddress, _amount, _useZro, _adapterParams);
+    }
+
+    function estimateSendAndCallFee(uint16 _dstChainId, bytes32 _toAddress, uint _amount, bytes calldata _payload, uint64 _dstGasForCall, bool _useZro, bytes calldata _adapterParams) public view virtual override returns (uint nativeFee, uint zroFee) {
+        return _estimateSendAndCallFee(_dstChainId, _toAddress, _amount, _payload, _dstGasForCall, _useZro, _adapterParams);
+    }
+
+    function circulatingSupply() public view virtual override returns (uint);
+
+    function token() public view virtual override returns (address);
+
+    function _transferFrom(address _from, address _to, uint _amount) internal virtual override (Fee, OFTCoreV2) returns (uint);
+
 }
