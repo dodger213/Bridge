@@ -44,11 +44,19 @@ contract ProxyOFTWithFee is BaseOFTWithFee {
         return address(innerToken);
     }
 
-       /************************************************************************
-    * internal functions
-    ************************************************************************/
-    function _debitFrom(address _from, uint16, bytes32, uint _amount) internal virtual override returns (uint) {
-        require(_from == _msgSender(), "ProxyOFTWithFee: owner is not send caller");
+    /************************************************************************
+     * internal functions
+     ************************************************************************/
+    function _debitFrom(
+        address _from,
+        uint16,
+        bytes32,
+        uint _amount
+    ) internal virtual override returns (uint) {
+        require(
+            _from == _msgSender(),
+            "ProxyOFTWithFee: owner is not send caller"
+        );
 
         _amount = _transferFrom(_from, address(this), _amount);
 
@@ -59,12 +67,19 @@ contract ProxyOFTWithFee is BaseOFTWithFee {
         // check total outbound amount
         outboundAmount += amount;
         uint cap = _sd2ld(type(uint64).max);
-        require(cap >= outboundAmount, "ProxyOFTWithFee: outboundAmount overflow");
+        require(
+            cap >= outboundAmount,
+            "ProxyOFTWithFee: outboundAmount overflow"
+        );
 
         return amount;
     }
 
-    function _creditTo(uint16, address _toAddress, uint _amount) internal virtual override returns (uint) {
+    function _creditTo(
+        uint16,
+        address _toAddress,
+        uint _amount
+    ) internal virtual override returns (uint) {
         outboundAmount -= _amount;
 
         // tokens are already in this contract, so no need to transfer
@@ -75,7 +90,11 @@ contract ProxyOFTWithFee is BaseOFTWithFee {
         return _transferFrom(address(this), _toAddress, _amount);
     }
 
-    function _transferFrom(address _from, address _to, uint _amount) internal virtual override returns (uint) {
+    function _transferFrom(
+        address _from,
+        address _to,
+        uint _amount
+    ) internal virtual override returns (uint) {
         uint before = innerToken.balanceOf(_to);
         if (_from == address(this)) {
             innerToken.safeTransfer(_to, _amount);
