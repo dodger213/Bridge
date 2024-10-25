@@ -8,7 +8,7 @@ contract MyToken is ERC20 {
         _mint(msg.sender, 10000000000 * 10 ** decimals());
     }
 
-    function decimals() public view override returns (uint8) {
+    function decimals() public pure override returns (uint8) {
         return 8;
     }
 
