@@ -20,12 +20,26 @@ interface ICommonOFT is IERC165 {
      * _useZro - indicates to use zro to pay L0 fees
      * _adapterParam - flexible bytes array to indicate messaging adapter services in L0
      */
-    function estimateSendFee(uint16 _dstChainId, bytes32 _toAddress, uint _amount, bool _useZro, bytes calldata _adapterParams) external view returns (uint nativeFee, uint zroFee);
+    function estimateSendFee(
+        uint16 _dstChainId,
+        bytes32 _toAddress,
+        uint _amount,
+        bool _useZro,
+        bytes calldata _adapterParams
+    ) external view returns (uint nativeFee, uint zroFee);
 
     /**
      * @dev estimate send and call free
      */
-    function estimateSendAndCallFee(uint16 _dstChainId, bytes32 _toAddress, uint _amount, bytes calldata _payload, uint64 _dstGasForCall, bool _useZro, bytes calldata _adapterParams) external view returns (uint nativeFee, uint zroFee);
+    function estimateSendAndCallFee(
+        uint16 _dstChainId,
+        bytes32 _toAddress,
+        uint _amount,
+        bytes calldata _payload,
+        uint64 _dstGasForCall,
+        bool _useZro,
+        bytes calldata _adapterParams
+    ) external view returns (uint nativeFee, uint zroFee);
 
     /**
      * @dev returns the circulating amount of tokens on current chain
