@@ -36,14 +36,6 @@ interface ILayerZeroEndpoint is ILayerZeroUserApplicationConfig {
         bytes calldata _payload
     ) external;
 
-    // @notice get the inboundNonce of a lzApp from a source chain which could be EVM or non-EVM chain
-    // @param _srcChainId - the source chain identifier
-    // @param _srcAddress - the source chain contract address
-    function getInboundNonce(
-        uint16 _srcChainId,
-        bytes calldata _srcAddress
-    ) external view returns (uint64);
-
     // @notice get the outboundNonce from this source chain which, consequently, is always an EVM
     // @param _srcAddress - the source chain contract address
     function getOutboundNonce(
@@ -67,6 +59,14 @@ interface ILayerZeroEndpoint is ILayerZeroUserApplicationConfig {
 
     // @notice get this Endpoint's immutable source identifier
     function getChainId() external view returns (uint16);
+    
+    // @notice get the inboundNonce of a lzApp from a source chain which could be EVM or non-EVM chain
+    // @param _srcChainId - the source chain identifier
+    // @param _srcAddress - the source chain contract address
+    function getInboundNonce(
+        uint16 _srcChainId,
+        bytes calldata _srcAddress
+    ) external view returns (uint64);
 
     // @notice the interface to retry failed message on this Endpoint destination
     // @param _srcChainId - the source chain identifier
