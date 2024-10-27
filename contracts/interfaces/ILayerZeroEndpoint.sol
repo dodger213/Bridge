@@ -86,18 +86,6 @@ interface ILayerZeroEndpoint is ILayerZeroUserApplicationConfig {
         bytes calldata _srcAddress
     ) external view returns (bool);
 
-    // @notice query if the _libraryAddress is valid for sending msgs.
-    // @param _userApplication - the user app address on this EVM chain
-    function getSendLibraryAddress(
-        address _userApplication
-    ) external view returns (address);
-
-    // @notice query if the _libraryAddress is valid for receiving msgs.
-    // @param _userApplication - the user app address on this EVM chain
-    function getReceiveLibraryAddress(
-        address _userApplication
-    ) external view returns (address);
-
     // @notice query if the non-reentrancy guard for receive() is on
     // @return true if the guard is on. false otherwise
     function isReceivingPayload() external view returns (bool);
@@ -129,4 +117,16 @@ interface ILayerZeroEndpoint is ILayerZeroUserApplicationConfig {
     function getSendVersion(
         address _userApplication
     ) external view returns (uint16);
+    
+    // @notice query if the _libraryAddress is valid for sending msgs.
+    // @param _userApplication - the user app address on this EVM chain
+    function getSendLibraryAddress(
+        address _userApplication
+    ) external view returns (address);
+
+    // @notice query if the _libraryAddress is valid for receiving msgs.
+    // @param _userApplication - the user app address on this EVM chain
+    function getReceiveLibraryAddress(
+        address _userApplication
+    ) external view returns (address);
 }
