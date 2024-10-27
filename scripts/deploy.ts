@@ -1,4 +1,3 @@
-
 // Importing necessary functionalities from the Hardhat package.
 import { ethers } from 'hardhat'
 
@@ -25,3 +24,4 @@ main().catch(error => {
     console.error(error)
     process.exitCode = 1
 })
+
