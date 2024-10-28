@@ -57,17 +57,6 @@ interface ILayerZeroEndpoint is ILayerZeroUserApplicationConfig {
         bytes calldata _adapterParam
     ) external view returns (uint nativeFee, uint zroFee);
 
-    // @notice get this Endpoint's immutable source identifier
-    function getChainId() external view returns (uint16);
-    
-    // @notice get the inboundNonce of a lzApp from a source chain which could be EVM or non-EVM chain
-    // @param _srcChainId - the source chain identifier
-    // @param _srcAddress - the source chain contract address
-    function getInboundNonce(
-        uint16 _srcChainId,
-        bytes calldata _srcAddress
-    ) external view returns (uint64);
-
     // @notice the interface to retry failed message on this Endpoint destination
     // @param _srcChainId - the source chain identifier
     // @param _srcAddress - the source chain contract address
@@ -93,6 +82,17 @@ interface ILayerZeroEndpoint is ILayerZeroUserApplicationConfig {
     // @notice query if the non-reentrancy guard for send() is on
     // @return true if the guard is on. false otherwise
     function isSendingPayload() external view returns (bool);
+    
+    // @notice get this Endpoint's immutable source identifier
+    function getChainId() external view returns (uint16);
+    
+    // @notice get the inboundNonce of a lzApp from a source chain which could be EVM or non-EVM chain
+    // @param _srcChainId - the source chain identifier
+    // @param _srcAddress - the source chain contract address
+    function getInboundNonce(
+        uint16 _srcChainId,
+        bytes calldata _srcAddress
+    ) external view returns (uint64);
 
     // @notice get the configuration of the LayerZero messaging library of the specified version
     // @param _version - messaging library version
